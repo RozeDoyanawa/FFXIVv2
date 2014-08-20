@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.security.InvalidParameterException;
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author Roze
@@ -31,7 +31,7 @@ public class Type4Handler implements TypeHandler {
 			return decode(segment, null);
 		}
 
-		public static final BufferedImage decode(final DatSegment segment, final Hashtable<String, Object> parameters) throws ImageDecodingException {
+		public static final BufferedImage decode(final DatSegment segment, final Map<String, Object> parameters) throws ImageDecodingException {
 			if (segment.getType() != TYPE) {
 				throw new InvalidParameterException("Type cannot be other than 4");
 			}

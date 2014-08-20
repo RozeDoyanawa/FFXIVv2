@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Hashtable;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public final class ImageDecoding {
@@ -96,7 +96,7 @@ public final class ImageDecoding {
 	}
 
 	public static final BufferedImage decodeImage4444split1channel(final byte[] data, final int targetWidth, final int targetHeight, final int compressedWidth, final int compressedHeight, int channel) throws ImageDecodingException {
-		final BufferedImage img = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_BYTE_INDEXED);
+		final BufferedImage img = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_4BYTE_ABGR);
 		if (data.length < (targetHeight * targetWidth * 2)) {
 			throw new ImageDecodingException("Data too short");
 		}
@@ -105,13 +105,16 @@ public final class ImageDecoding {
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 
 		int p = 0;
+		final int r = 0;
+		final int g = 0;
+		final int b = 0;
 		switch (channel) {
 			case 0: { //red
 				for (int y = 0; y < targetHeight; y++) {
 					for (int x = 0; x < targetWidth; x++) {
 						final int pixel = buffer.getShort() & 0xffff;
-						final int v = 255 - ((pixel & 0xF)) * 16;
-						img.setRGB(x, y, new Color(v, v, v).getRGB());
+						final int v = ((pixel & 0xF)) * 16;
+						img.setRGB(x, y, new Color(r, g, b, v).getRGB());
 						p += 2;
 					}
 				}
@@ -121,8 +124,8 @@ public final class ImageDecoding {
 				for (int y = 0; y < targetHeight; y++) {
 					for (int x = 0; x < targetWidth; x++) {
 						final int pixel = buffer.getShort() & 0xffff;
-						final int v = 255 - ((pixel & 0xF0) >> 4) * 16;
-						img.setRGB(x, y, new Color(v, v, v).getRGB());
+						final int v = ((pixel & 0xF0) >> 4) * 16;
+						img.setRGB(x, y, new Color(r, g, b, v).getRGB());
 						p += 2;
 					}
 				}
@@ -132,8 +135,8 @@ public final class ImageDecoding {
 				for (int y = 0; y < targetHeight; y++) {
 					for (int x = 0; x < targetWidth; x++) {
 						final int pixel = buffer.getShort() & 0xffff;
-						final int v = 255 - ((pixel & 0xF00) >> 8) * 16;
-						img.setRGB(x, y, new Color(v, v, v).getRGB());
+						final int v = ((pixel & 0xF00) >> 8) * 16;
+						img.setRGB(x, y, new Color(r, g, b, v).getRGB());
 						p += 2;
 					}
 				}
@@ -143,8 +146,8 @@ public final class ImageDecoding {
 				for (int y = 0; y < targetHeight; y++) {
 					for (int x = 0; x < targetWidth; x++) {
 						final int pixel = buffer.getShort() & 0xffff;
-						final int v = 255 - ((pixel & 0xF000) >> 12) * 16;
-						img.setRGB(x, y, new Color(v, v, v).getRGB());
+						final int v = ((pixel & 0xF000) >> 12) * 16;
+						img.setRGB(x, y, new Color(r, g, b, v).getRGB());
 						p += 2;
 					}
 				}
@@ -164,7 +167,7 @@ public final class ImageDecoding {
 	 * @return
 	 * @throws ImageDecodingException
 	 */
-	public static final BufferedImage decodeImage5551(final byte[] data, final int targetWidth, final int targetHeight, final int compressedWidth, final int compressedHeight, final Hashtable<String, Object> parameters) throws ImageDecodingException {
+	public static final BufferedImage decodeImage5551(final byte[] data, final int targetWidth, final int targetHeight, final int compressedWidth, final int compressedHeight, final Map<String, Object> parameters) throws ImageDecodingException {
 		final BufferedImage img = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
 		if (data.length < (targetHeight * targetWidth * 2)) {
 			throw new ImageDecodingException("Data too short");

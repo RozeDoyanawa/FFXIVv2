@@ -13,6 +13,17 @@ public class IndexReaderWrapper {
 	private final FileChannel[] readChannel;
 	private IndexReader reader;
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("IndexReaderWrapper(readChannelCount=");
+		sb.append(readChannel.length);
+		sb.append(", reader=");
+		sb.append(reader);
+		sb.append(")");
+		return sb.toString();
+	}
+
 	public FileChannel getReadChannel() {
 		return readChannel[0];
 	}

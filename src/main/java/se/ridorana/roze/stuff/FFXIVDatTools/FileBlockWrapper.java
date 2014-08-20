@@ -22,6 +22,21 @@ public class FileBlockWrapper {
 		return fileBlock;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("FileBlockWrapper(");
+		sb.append(fileBlock.toString());
+		sb.append(", indexFile=");
+		sb.append(indexFile);
+		sb.append(", segment=");
+		sb.append(segment.toString());
+		sb.append(", indexReader=");
+		sb.append(indexReaderWrapper.toString());
+		sb.append(")");
+		return super.toString();
+	}
+
 	public FileBlockWrapper(IndexReaderWrapper indexReaderWrapper, IndexReader.FileBlock fileBlock) throws IOException, DatSegment.HandlerException {
 		this.fileBlock = fileBlock;
 		this.indexFile = indexReaderWrapper.getReader().getSourceFile();
