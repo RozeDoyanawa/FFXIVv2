@@ -20,11 +20,21 @@ public class IndexReader {
 	 * Map for holding already loaded tables, to reduce lookup times for pathToSegment
 	 */
 	private static ConcurrentHashMap<String, IndexReaderWrapper> tables = new ConcurrentHashMap<>();
-	private static String defaultSourceFolder = "C:/games/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv";
+	private static String defaultSourceFolder = "D:/games/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv";
 	private final HashMap<Integer, PathBlock> pathtable;
 	private String sourceFolder;
 	private String sourceFile;
 	private boolean loaded = false;
+
+	private static boolean storeHeaderData = false;
+
+	public static void setStoreHeaderData(boolean storeHeaderData) {
+		IndexReader.storeHeaderData = storeHeaderData;
+	}
+
+	public static boolean isStoreHeaderData() {
+		return storeHeaderData;
+	}
 
 	/**
 	 * Initiates a new IndexReader with the defaultSourceFolder as its data source
@@ -72,7 +82,7 @@ public class IndexReader {
 		String separator;
 		int sepTest;
 		String sepTestStr;
-		int separatorIndex = -1;
+		int separatorIndex;
 		if ((sepTest = searchpath.indexOf(sepTestStr = "/")) >= 0) {
 			separator = sepTestStr;
 			separatorIndex = sepTest;
@@ -191,6 +201,7 @@ public class IndexReader {
 	 * @param searchpath
 	 * @return
 	 */
+	@SuppressWarnings( "UnusedDeclaration" )
 	private static FileBlockWrapper pathToSegmentHex(String searchpath) throws IOException, DatSegment.HandlerException {
 		PathInfo pi = splitPath(searchpath);
 		if (pi.path.length() != 6 || pi.name.length() != 6) {
@@ -242,6 +253,7 @@ public class IndexReader {
 	 * @param value
 	 * @return
 	 */
+	@SuppressWarnings( "UnusedDeclaration" )
 	public static String int2hexstrBE(int value) {
 		byte[] bytes = new byte[4];
 		ByteBuffer bb = ByteBuffer.wrap(bytes);
@@ -270,8 +282,8 @@ public class IndexReader {
 	 */
 	public static String byteArrayToHexString(final byte[] b) {
 		final StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < b.length; i++) {
-			sb.append(Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1));
+		for ( final byte aB : b ) {
+			sb.append(Integer.toString((aB & 0xff) + 0x100, 16).substring(1));
 		}
 		return sb.toString();
 	}
@@ -282,7 +294,8 @@ public class IndexReader {
 	 * @param buffer
 	 * @return
 	 */
-	public static final int getUnsignedByte(final ByteBuffer buffer) {
+	@SuppressWarnings( "UnusedDeclaration" )
+	public static int getUnsignedByte(final ByteBuffer buffer) {
 		final int t = buffer.get();
 		if (t < 0) {
 			return 256 + t;
@@ -294,7 +307,7 @@ public class IndexReader {
 	 * @param i
 	 * @return
 	 */
-	private static final String intToHex(int i) {
+	private static String intToHex(int i) {
 		final char ac[] = new char[32];
 		final int j = 4;
 		int k = 0;
@@ -317,14 +330,16 @@ public class IndexReader {
 	 * @param convertme
 	 * @return
 	 */
+	@SuppressWarnings( "UnusedDeclaration" )
 	public static String toSHA1(final byte[] convertme) {
-		MessageDigest md = null;
+		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
+			return new String(md.digest(convertme));
 		} catch (final NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-		return new String(md.digest(convertme));
+		return null;
 	}
 
 	/**
@@ -387,6 +402,7 @@ public class IndexReader {
 	/**
 	 * @return
 	 */
+	@SuppressWarnings( "UnusedDeclaration" )
 	public int getPathCount() {
 		return pathtable.size();
 	}
@@ -418,7 +434,7 @@ public class IndexReader {
 		return loaded;
 	}
 
-	private final void setLoaded(final boolean loaded) {
+	private void setLoaded(final boolean loaded) {
 		this.loaded = loaded;
 	}
 
@@ -431,7 +447,7 @@ public class IndexReader {
 		if ((sourceFile == null) || (sourceFolder == null)) {
 			throw new NullPointerException("Source cannot be null");
 		}
-		final long startedAt = System.currentTimeMillis();
+		//final long startedAt = System.currentTimeMillis();
 		String source = sourceFolder;
 		if (source.charAt(source.length() - 1) != '/') {
 			source += "/";
@@ -448,17 +464,18 @@ public class IndexReader {
 		final MappedByteBuffer map = raf.getChannel().map(MapMode.READ_ONLY, 0, inputFile.length());
 		map.order(ByteOrder.LITTLE_ENDIAN);
 		map.position(0x400);
+		@SuppressWarnings( "UnusedDeclaration" )
 		final int headerLength = map.getInt(); // raf.readInt32LE();
 		//System.out.println(headerLength);
 		final byte[] header = new byte[960];
 		map.get(header);
-		final String sha1_gen = toSHA1(header);
+		//final String sha1_gen = toSHA1(header);
 		map.position(0x400);
 		final SegmentInfo segment1 = new SegmentInfo(map);
-		map.position(0x400 + 76);
-		final SegmentInfo segment2 = new SegmentInfo(map);
-		map.position(0x400 + 76 + 72);
-		final SegmentInfo segment3 = new SegmentInfo(map);
+		//map.position(0x400 + 76);
+		//final SegmentInfo segment2 = new SegmentInfo(map);
+		//map.position(0x400 + 76 + 72);
+		//final SegmentInfo segment3 = new SegmentInfo(map);
 		map.position(0x400 + 76 + 72 + 72);
 		final SegmentInfo segment4 = new SegmentInfo(map);
 		// System.out.println(segment1.toString());
@@ -487,7 +504,7 @@ public class IndexReader {
 			files[i].setParent(path);
 		}
 
-		final long endedAt = System.currentTimeMillis();
+		//final long endedAt = System.currentTimeMillis();
 		//System.out.println("Listing succeeded in " + (((double) endedAt - (double) startedAt) / 1000) + " seconds");
 		setLoaded(true);
 		// System.out.println(pathtable.toString());
@@ -602,14 +619,9 @@ public class IndexReader {
 
 		@Override
 		public String toString() {
-			final StringBuilder sb = new StringBuilder();
-			sb.append("Segment[");
-			sb.append("offset=" + offset);
-			sb.append(", path=" + intToHex((int) path));
-			sb.append(", name=" + intToHex((int) name));
-			sb.append(", something=" + something);
-			sb.append("]");
-			return sb.toString();
+			return "Segment[" + "offset=" + offset + ", path=" + intToHex((int)path) + ", name=" + intToHex(
+				(int)name
+			) + ", something=" + something + "]";
 		}
 	}
 
@@ -639,14 +651,9 @@ public class IndexReader {
 
 		@Override
 		public String toString() {
-			final StringBuilder sb = new StringBuilder();
-			sb.append("Segment[");
-			sb.append("path=" + intToHex(path));
-			sb.append(", childType=" + entryType);
-			sb.append(", childCount=" + files.size());
-			sb.append(", offsetToFirstChild=" + firstFileOffset);
-			sb.append("]");
-			return sb.toString();
+			return "Segment[" + "path=" + intToHex(
+				path
+			) + ", childType=" + entryType + ", childCount=" + files.size() + ", offsetToFirstChild=" + firstFileOffset + "]";
 		}
 	}
 
@@ -672,12 +679,12 @@ public class IndexReader {
 		public String toString() {
 			final StringBuilder sb = new StringBuilder();
 			sb.append("Segment[");
-			sb.append("offset=" + offset);
-			sb.append(", length=" + length);
+			sb.append("offset=").append(offset);
+			sb.append(", length=").append(length);
 			try {
-				sb.append(", hash=" + byteArrayToHexString(hash.getBytes("ASCII")) + ")");
+				sb.append(", hash=").append(byteArrayToHexString(hash.getBytes("ASCII"))).append(")");
 			} catch (final UnsupportedEncodingException e) {
-				sb.append(", hash=<CharsetFault<" + hash + ">>]");
+				sb.append(", hash=<CharsetFault<").append(hash).append(">>]");
 			}
 			return sb.toString();
 		}
@@ -710,6 +717,7 @@ public class IndexReader {
 		 * @return
 		 * @throws IOException
 		 */
+		@SuppressWarnings( "UnusedDeclaration" )
 		public final int readInt32LE() throws IOException {
 			final int i = read();
 			final int j = read();
@@ -718,7 +726,7 @@ public class IndexReader {
 			if ((i | j | k | l) < 0) {
 				throw new EOFException();
 			} else {
-				return (l << 24) + (k << 16) + (j << 8) + (i << 0);
+				return (l << 24) + (k << 16) + (j << 8) + (i);
 			}
 		}
 
@@ -726,6 +734,7 @@ public class IndexReader {
 		 * @return
 		 * @throws IOException
 		 */
+		@SuppressWarnings( "UnusedDeclaration" )
 		public final long readInt64LE() throws IOException {
 			final long i = (long) readInt() & 4294967295L;
 			final long j = (long) readInt();
@@ -736,13 +745,14 @@ public class IndexReader {
 		 * @return
 		 * @throws IOException
 		 */
+		@SuppressWarnings( "UnusedDeclaration" )
 		public short readShortLE() throws IOException {
 			final int i = read();
 			final int j = read();
 			if ((i | j) < 0) {
 				throw new EOFException();
 			} else {
-				return (short) ((j << 8) + (i << 0));
+				return (short)((j << 8) + (i));
 			}
 		}
 	}

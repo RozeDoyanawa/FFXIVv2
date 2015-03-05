@@ -140,7 +140,7 @@ public class Type4Handler implements TypeHandler {
 	}
 
 	@Override
-	public void readType(final DatSegment segment, final FileChannel channel) throws IOException {
+	public int readType(final DatSegment segment, final FileChannel channel) throws IOException {
 		if (segment.getType() != TYPE) {
 			throw new InvalidParameterException("Invalid type for this handler");
 		}
@@ -173,6 +173,7 @@ public class Type4Handler implements TypeHandler {
 			}
 		}
 		segment.setTypeData(data);
+		return headerLength;
 	}
 
 }

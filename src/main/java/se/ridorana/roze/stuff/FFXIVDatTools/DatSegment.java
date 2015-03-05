@@ -76,7 +76,7 @@ public class DatSegment {
 		 * @param channel
 		 * @throws IOException
 		 */
-		public void readType(DatSegment segment, FileChannel channel) throws IOException;
+		public int readType(DatSegment segment, FileChannel channel) throws IOException;
 	}
 
 	private static final Hashtable<Integer, TypeHandler> types = new Hashtable<>();
@@ -153,6 +153,8 @@ public class DatSegment {
 	private long uncompressedSize = -1;
 
 	private byte[] data;
+
+	private byte[] rawHeader;
 
 	private FileBlock sourceBlock;
 
@@ -302,6 +304,22 @@ public class DatSegment {
 					"No handler for type " + headerType + " was found, cannot read segment, position: " + offset
 			);
 		}
+		if ( IndexReader.isStoreHeaderData() ) {
+			final ByteBuffer bb2 = dataStream.map(MapMode.READ_ONLY, offset, headerLength);
+			this.rawHeader = new byte[headerLength];
+			bb2.get(this.rawHeader);
+		}
+	}
+
+	public byte[] getRawHeader() {
+		if ( rawHeader == null ) {
+			if ( IndexReader.isStoreHeaderData() ) {
+				throw new NullPointerException("Raw header not cached");
+			} else {
+				throw new NullPointerException("Header is null for unknown reason");
+			}
+		}
+		return rawHeader;
 	}
 
 	private FrameInfo readFrame(final byte[] into, final int intoOffset, final long frameLocation, final FileChannel channel) throws IOException {

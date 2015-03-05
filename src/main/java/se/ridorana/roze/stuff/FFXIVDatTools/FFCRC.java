@@ -160,6 +160,15 @@ public class FFCRC {
 		return dwCRC;
 	}
 
+	public static void main(String[] vargs) {
+		int crc = ComputeCRC("bgcommon/nature/sky/texture".toLowerCase().getBytes());
+		System.out.println("Signed int: " + crc);
+		System.out.println("Unsigned int: " + Long.toString(((long)crc) & 0xffffffffL));
+		crc = ComputeCRC("sky_001.tex".toLowerCase().getBytes());
+		System.out.println("Signed int: " + crc);
+		System.out.println("Unsigned int: " + Long.toString(((long)crc) & 0xffffffffL));
+	}
+
 	/**
 	 * Deprecated as of introduction of cleaned algorithm, keept as code reference.
 	 *
