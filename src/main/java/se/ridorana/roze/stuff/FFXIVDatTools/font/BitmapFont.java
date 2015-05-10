@@ -124,7 +124,7 @@ public class BitmapFont {
 		int w = 0, h = 0;
 		for (char c : str) {
 			Glyph g = list.getGlyphForChar(c);
-			w += g.w + g.xoff + g.yoff;
+			w += g.w + g.xPreOff + g.xPostOff;
 			if (g.h > h) {
 				h = g.h;
 			}
@@ -149,9 +149,9 @@ public class BitmapFont {
 				int gh = glyph.h;
 				int gx = glyph.x;
 				int gy = glyph.y;
-				int mod = glyph.yoff;
-				graphics.drawImage(getImage(glyph), x + mod, y, x + gw + mod, y + gh, gx, gy, gx + gw, gy + gh, null);
-				x += gw + glyph.xoff + mod;
+				int mod = glyph.xPostOff;
+				graphics.drawImage(getImage(glyph), x + mod, y - glyph.yOffs, x + gw + mod, y + gh - glyph.yOffs, gx, gy, gx + gw, gy + gh, null);
+				x += gw + glyph.xPreOff + mod;
 			}
 			graphics.setColor(color);
 			((Graphics2D)graphics).setComposite(AlphaComposite.SrcIn);
@@ -240,23 +240,6 @@ public class BitmapFont {
 			}
 		}
 
-		public Dimension stringBounds(String str, float size) {
-			return stringBounds(str.toCharArray(), size);
-		}
-
-		public Dimension stringBounds(char[] str, float size) {
-			int w = 0, h = 0;
-			BitmapFont bf = getClosestFont(size);
-			for ( char c : str ) {
-				Glyph g = bf.list.getGlyphForChar(c);
-				w += g.w + g.xoff + g.yoff;
-				if ( g.h > h ) {
-					h = g.h;
-				}
-			}
-			return new Dimension(w, h);
-		}
-
 		/**
 		 * @param set
 		 * @param item
@@ -283,15 +266,24 @@ public class BitmapFont {
 		public static float getClosest(NavigableSet<Float> set, float item, ClosestMode mode) {
 			switch ( mode ) {
 				case Upper: {
+					if ( set.contains(item) ) {
+						return item;
+					}
 					final Float higher = set.higher(item);
 					return higher == null ? set.last() : higher;
 				}
 				case Lower: {
+					if ( set.contains(item) ) {
+						return item;
+					}
 					final Float lower = set.lower(item);
 					return lower == null ? set.first() : lower;
 				}
 				case Closest:
 				default: {
+					if ( set.contains(item) ) {
+						return item;
+					}
 					final Float higher = set.higher(item);
 					final Float lower = set.lower(item);
 					if ( lower != null ) {
@@ -305,6 +297,23 @@ public class BitmapFont {
 					}
 				}
 			}
+		}
+
+		public Dimension stringBounds(String str, float size) {
+			return stringBounds(str.toCharArray(), size);
+		}
+
+		public Dimension stringBounds(char[] str, float size) {
+			int w = 0, h = 0;
+			BitmapFont bf = getClosestFont(size);
+			for ( char c : str ) {
+				Glyph g = bf.list.getGlyphForChar(c);
+				w += g.w + g.xPreOff + g.xPostOff;
+				if ( g.h > h ) {
+					h = g.h;
+				}
+			}
+			return new Dimension(w, h);
 		}
 
 		/**

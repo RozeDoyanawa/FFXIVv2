@@ -12,9 +12,23 @@ public class Glyph {
 	int y;
 	int w;
 	int h;
-	int xoff;
-	int yoff;
+	int xPreOff;
+	int xPostOff;
+	int yOffs;
 	int imageIndex;
+
+	Glyph(char chr, short imageIndex, int x, int y, int w, int h, int xoff, int xPostOff) {
+		this.channel = imageIndex % 4; // 0 == Blue, 1 = Green, 2 = Red, 3 = Alpha
+		this.imageIndex = (imageIndex >> 2) & 0x0f;
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+		this.character = chr;
+		this.xPreOff = xoff;
+		this.yOffs = (imageIndex >> 8);
+		this.xPostOff = xPostOff;
+	}
 
 	public int getX() {
 		return x;
@@ -68,24 +82,16 @@ public class Glyph {
 		return character;
 	}
 
-	public int getXoff() {
-		return xoff;
+	public int getxPreOff() {
+		return xPreOff;
 	}
 
-	public int getYoff() {
-		return yoff;
+	public int getxPostOff() {
+		return xPostOff;
 	}
 
-	Glyph(char chr, short imageIndex, int x, int y, int w, int h, int xoff, int yoff) {
-		this.channel = imageIndex % 4; // 0 == Blue, 1 = Green, 2 = Red, 3 = Alpha
-		this.imageIndex = imageIndex >> 2;
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
-		this.character = chr;
-		this.xoff = xoff;
-		this.yoff = yoff;
+	public int getyOffs() {
+		return yOffs;
 	}
 
 	@Override
