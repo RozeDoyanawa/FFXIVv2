@@ -18,17 +18,17 @@ This library includes functionality to decompress and render most texture files 
 ###Example usage of the library:
 First, set the directory where the data files can be found:
 ```IndexReader.setDefaultSourceFolder(String gamepath);```
-Where gamepath is the path to the games data folder, ex: "C:/games/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv"
+*Where gamepath is the path to the games data folder, ex: "C:/games/SquareEnix/FINAL FANTASY XIV - A Realm Reborn/game/sqpack/ffxiv"
 
 Any index-string is at the form xx0000, where x = 00,01,02,03,04,05,06,07,08,0a,0b,0c,12 or 13
 ```IndexReader.getSegmentByPathname(String pathname);```
-The pathnames should follow the syntax:  [index]:[path]/[file]
-Ex: 060000:ui/uld/BuddyChocobo.tex
+*The pathnames should follow the syntax:  [index]:[path]/[file]
+  Ex: 060000:ui/uld/BuddyChocobo.tex
 
 IndexReader.pathToSegment(long pathHash, long fileHash, String index);
-The pathHash should be the [path] (without trailing /) hashed with SE's CRC32 algorithm (see ```FFCRC.ComputeCRC(byte[] bytes```))
-The nameHash should be the [file] (including extension) hashed with SE's CRC32 algorithm (see  ```FFCRC.ComputeCRC(byte[] bytes```))
-The index should be as stated above
+*The pathHash should be the path (without trailing /) hashed with SE's CRC32 algorithm (see ```FFCRC.ComputeCRC(byte[] bytes```))
+*The nameHash should be the file (including extension) hashed with SE's CRC32 algorithm (see  ```FFCRC.ComputeCRC(byte[] bytes```))
+*The index should be as stated above
 
 ```java
 FileBlockWrapper fbw = IndexReader.getSegmentByPathname(ftd);
